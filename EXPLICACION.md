@@ -82,9 +82,24 @@ PD : si se desea leer este documento mejor por favor haga [Clic derecho] sobre e
 ##### Menú izq : donde vamos a ver las branches y para guardar
 ##### Cajon verde : donde vemos lo que ha cambiado, el mensaje que queremos ponerle ( donde se da informaciónd e lo que se añada ( yo uso tambien # en plan 0.1; 0.5...) y el botón commit para guardar, y luego ese boton se convierte en otro para subirlo a la branch)
 ##### Cuadradito rojo : es lo que instalamos, la extensión que abre una pesataña para ver las branch de mejor manera
+<br>
+<br>
+<br>
+<br>
+<br>
 
-#### Ejemplo de Hacer cambios en una Branch y subirla para que todos la vean
+## Ejemplo de Hacer cambios en una Branch y subirla para que todos la vean
+![Estructura de carpetas del proyecto](<./public/Explicación(MD) Fotos/cambio1.png>)
+![Estructura de carpetas del proyecto](<./public/Explicación(MD) Fotos/cambio2.png>)
+![Estructura de carpetas del proyecto](<./public/Explicación(MD) Fotos/cambio3.png>)
+![Estructura de carpetas del proyecto](<./public/Explicación(MD) Fotos/cambio4.png>)
+<hr>
+<hr>
+<hr>
+<br>
 
+### 2.2- Como creo una branch???
+#### Desde ese menu que añadimos como extensión vamos al punto donde queremos hacer una división para trabajr en otroa rchivo ( branch )
 
 
 
