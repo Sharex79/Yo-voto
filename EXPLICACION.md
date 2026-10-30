@@ -77,6 +77,14 @@ PD : si se desea leer este documento mejor por favor haga [Clic derecho] sobre e
 <hr>
 
 ### 2.1 Primero nos vamos para el main o la ultima parte del proyecto y creamos nuestra branch
+![Estructura de carpetas del proyecto](<./public/Explicación(MD) Fotos/2-1.png>)
+#### En esta foto muestro :
+##### Menú izq : donde vamos a ver las branches y para guardar
+##### Cajon verde : donde vemos lo que ha cambiado, el mensaje que queremos ponerle ( donde se da informaciónd e lo que se añada ( yo uso tambien # en plan 0.1; 0.5...) y el botón commit para guardar, y luego ese boton se convierte en otro para subirlo a la branch)
+##### Cuadradito rojo : es lo que instalamos, la extensión que abre una pesataña para ver las branch de mejor manera
+
+#### Ejemplo de Hacer cambios en una Branch y subirla para que todos la vean
+
 
 
 
