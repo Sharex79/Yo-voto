@@ -100,6 +100,8 @@ PD : si se desea leer este documento mejor por favor haga [Clic derecho] sobre e
 
 ### 2.2- Como creo una branch???
 #### Desde ese menu que añadimos como extensión vamos al punto donde queremos hacer una división para trabajr en otroa rchivo ( branch )
-
+![Estructura de carpetas del proyecto](<./public/Explicación(MD) Fotos/branch.png>)
+#### Moverse por otras ramas para ver la parte del proyecto de antes es con doble clic sobre la branch,,, pero el termino tambien es "checkout"
+<br>
 
 
