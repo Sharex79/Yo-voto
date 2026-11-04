@@ -104,4 +104,18 @@ PD : si se desea leer este documento mejor por favor haga [Clic derecho] sobre e
 #### Moverse por otras ramas para ver la parte del proyecto de antes es con doble clic sobre la branch,,, pero el termino tambien es "checkout"
 <br>
 
+![Estructura de carpetas del proyecto](<./public/Explicación(MD) Fotos/branch1.png>)
+![Estructura de carpetas del proyecto](<./public/Explicación(MD) Fotos/branch2.png>)
+![Estructura de carpetas del proyecto](<./public/Explicación(MD) Fotos/branch3.png>)
+
+#### Poco más, usar esa nomenclatura al crear branch para saber quien la hizo, que elemnto es y para que pagina html será
+# OJO al hacer commit, que sea en la rama que toca, que sino se puede regar y no saber que cambio se hizo...
+<hr>
+<hr>
+<hr>
+<br>
+
+
+
+### 2.3 Y como comienzo a crear archivos????
 
