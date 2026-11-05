@@ -171,6 +171,26 @@ function mostrarPagina(idPagina) {
   app.querySelector(`[data-page="${idPagina}"]`)?.setAttribute('aria-current', 'page');
 }
 
+function actualizarContenidoCompartido(idPagina) {
+  const pagina = paginas[idPagina];
+  const contenido = app.querySelector('.page-content');
+
+  if (!pagina?.usaComponentesCompartidos || !contenido) {
+    throw new Error(`No se pudo actualizar el contenido compartido de "${idPagina}".`);
+  }
+
+  contenido.innerHTML = pagina.secciones
+    .map((archivo) => cargarFragmento(pagina.carpeta, archivo))
+    .join('\n');
+  contenido.classList.remove('page-content--salida', 'page-content--entrada');
+  app.querySelectorAll('[data-page][aria-current="page"]').forEach((boton) => {
+    boton.removeAttribute('aria-current');
+  });
+  app.querySelectorAll(`[data-page="${idPagina}"]`).forEach((boton) => {
+    boton.setAttribute('aria-current', 'page');
+  });
+}
+
 async function cambiarPagina(idPagina) {
   if (idPagina === paginaActual || transicionPaginaEnCurso) {
     return;
@@ -178,6 +198,9 @@ async function cambiarPagina(idPagina) {
 
   const contenidoActual = app.querySelector('.page-content');
   const movimientoReducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const conservarComponentesCompartidos =
+    paginas[paginaActual]?.usaComponentesCompartidos &&
+    paginas[idPagina]?.usaComponentesCompartidos;
 
   if (!contenidoActual || movimientoReducido) {
     mostrarPagina(idPagina);
@@ -208,7 +231,11 @@ async function cambiarPagina(idPagina) {
       contenidoActual.classList.add('page-content--salida');
       timeoutId = window.setTimeout(finalizar, 350);
     });
-    mostrarPagina(idPagina);
+    if (conservarComponentesCompartidos) {
+      actualizarContenidoCompartido(idPagina);
+    } else {
+      mostrarPagina(idPagina);
+    }
     paginaActual = idPagina;
     app.querySelector('.page-content')?.classList.add('page-content--entrada');
   } finally {
@@ -248,6 +275,16 @@ app.addEventListener('click', (evento) => {
   const capaIdioma = evento.target.closest('.navbar-informacion__idioma-capa');
   const capaAjustes = evento.target.closest('.navbar-informacion__ajustes-capa');
   const botonAjustes = evento.target.closest('.navbar-informacion__ajustes');
+  const botonPaginaPanel = evento.target.closest(
+    '.navbar-informacion__ajustes-panel [data-page]',
+  );
+
+  if (botonPaginaPanel?.dataset.page && cabeceraInformacion) {
+    evento.preventDefault();
+    cerrarPanelAjustes(cabeceraInformacion);
+    void cambiarPagina(botonPaginaPanel.dataset.page);
+    return;
+  }
 
   if (capaIdioma) {
     const opcionIdioma = evento.target.closest('[data-idioma]');
