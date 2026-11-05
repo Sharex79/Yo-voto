@@ -1,4 +1,5 @@
 import './style.css';
+import './navbar.css';
 
 // 1. Configuración: cada botón apunta a una carpeta y a sus fragmentos HTML.
 const paginas = {
@@ -227,7 +228,12 @@ app.addEventListener('click', (evento) => {
     return;
   }
 
-  if (evento.target.closest('.navbar-informacion__logo-boton')) {
+  const botonInicio = evento.target.closest(
+    '.navbar-informacion__logo-boton, .footer-informacion__marca',
+  );
+
+  if (botonInicio) {
+    evento.preventDefault();
     const movimientoReducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.scrollTo({ top: 0, behavior: movimientoReducido ? 'instant' : 'smooth' });
     return;
