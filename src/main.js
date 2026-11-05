@@ -61,6 +61,8 @@ let posicionAntesPanelAjustes = null;
 let estilosBodyAntesPanelAjustes = null;
 let idiomaSeleccionado = 'es';
 let ignorarDireccionScrollHasta = 0;
+let paginaActual = null;
+let transicionPaginaEnCurso = false;
 
 function bloquearScrollFondo() {
   if (posicionAntesPanelAjustes !== null) {
@@ -167,6 +169,51 @@ function mostrarPagina(idPagina) {
   `;
 
   app.querySelector(`[data-page="${idPagina}"]`)?.setAttribute('aria-current', 'page');
+}
+
+async function cambiarPagina(idPagina) {
+  if (idPagina === paginaActual || transicionPaginaEnCurso) {
+    return;
+  }
+
+  const contenidoActual = app.querySelector('.page-content');
+  const movimientoReducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!contenidoActual || movimientoReducido) {
+    mostrarPagina(idPagina);
+    paginaActual = idPagina;
+    return;
+  }
+
+  transicionPaginaEnCurso = true;
+
+  try {
+    contenidoActual.classList.remove('page-content--entrada');
+    void contenidoActual.offsetWidth;
+
+    await new Promise((resolver) => {
+      let timeoutId = 0;
+      const alFinalizarAnimacion = (evento) => {
+        if (evento.target === contenidoActual) {
+          finalizar();
+        }
+      };
+      const finalizar = () => {
+        window.clearTimeout(timeoutId);
+        contenidoActual.removeEventListener('animationend', alFinalizarAnimacion);
+        resolver();
+      };
+
+      contenidoActual.addEventListener('animationend', alFinalizarAnimacion);
+      contenidoActual.classList.add('page-content--salida');
+      timeoutId = window.setTimeout(finalizar, 350);
+    });
+    mostrarPagina(idPagina);
+    paginaActual = idPagina;
+    app.querySelector('.page-content')?.classList.add('page-content--entrada');
+  } finally {
+    transicionPaginaEnCurso = false;
+  }
 }
 
 // Un solo listener sirve para los botones aunque se vuelva a crear la navbar.
@@ -291,7 +338,7 @@ app.addEventListener('click', (evento) => {
   const boton = evento.target.closest('[data-page]');
 
   if (boton?.dataset.page) {
-    mostrarPagina(boton.dataset.page);
+    void cambiarPagina(boton.dataset.page);
   }
 });
 
@@ -379,4 +426,5 @@ window.addEventListener(
 window.addEventListener('resize', actualizarProgresoScroll);
 
 mostrarPagina('informacion');
+paginaActual = 'informacion';
 actualizarProgresoScroll();
