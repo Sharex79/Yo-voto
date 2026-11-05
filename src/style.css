@@ -1,7 +1,14 @@
 :root {
+  --fondo-exterior-imagen: url('/Fondo%20WEB.jpg');
+  --fondo-exterior-tamano-mosaico: 220px;
+  --fondo-exterior-blur: 1px;
+  --fondo-exterior-oscurecer: 18%;
+  --fondo-exterior-velocidad-parallax: 0.3;
+  --fondo-exterior-desplazamiento: 0px;
+
   font-family: system-ui, 'Segoe UI', sans-serif;
   color: #202431;
-  background: #f4f6fb;
+  background: transparent;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -9,15 +16,40 @@
 }
 
 body {
+  position: relative;
+  isolation: isolate;
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
 }
 
+body::before {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  content: '';
+  background-image:
+    linear-gradient(
+      rgb(20 30 55 / var(--fondo-exterior-oscurecer)),
+      rgb(20 30 55 / var(--fondo-exterior-oscurecer))
+    ),
+    var(--fondo-exterior-imagen);
+  background-position: 0 0, 0 var(--fondo-exterior-desplazamiento);
+  background-repeat: repeat;
+  background-size: var(--fondo-exterior-tamano-mosaico);
+  filter: blur(var(--fondo-exterior-blur));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --fondo-exterior-velocidad-parallax: 0;
+  }
+}
+
 #app {
   display: flex;
   flex-direction: column;
-  width: min(100%, 1000px);
+  width: min(100%, 1300px);
   min-height: 100vh;
   margin: 0 auto;
   background: #fff;
@@ -27,9 +59,13 @@ body {
 
 /* INICIO: estilos exclusivos de la navbar de la página 1 */
 .header-informacion {
-  position: sticky;
+  position: fixed;
   top: 0;
+  right: 0;
+  left: 0;
   z-index: 10;
+  width: min(100%, 1000px);
+  margin: 0 auto;
   overflow-anchor: none;
 }
 
@@ -209,7 +245,8 @@ body {
   visibility: hidden;
 }
 
-.navbar-informacion__toggle {
+.navbar-informacion__toggle,
+.footer-informacion__legales-toggle {
   position: relative;
   z-index: 30;
   display: block;
@@ -228,12 +265,14 @@ body {
   transition: background 0.5s ease, transform 0.5s ease;
 }
 
-.navbar-informacion__toggle:hover {
+.navbar-informacion__toggle:hover,
+.footer-informacion__legales-toggle:hover {
   background: #3759c7;
   transform: translateY(1px);
 }
 
-.navbar-informacion__toggle:focus-visible {
+.navbar-informacion__toggle:focus-visible,
+.footer-informacion__legales-toggle:focus-visible {
   outline: 2px solid #3759c7;
   outline-offset: 3px;
 }
@@ -481,6 +520,10 @@ body {
   box-sizing: border-box;
 }
 
+.page-content--navbar-informacion {
+  padding-top: 300px;
+}
+
 .page-content h1 {
   margin: 0 0 12px;
   font-size: clamp(28px, 5vw, 40px);
@@ -499,7 +542,133 @@ body {
   font-size: 14px;
 }
 
+.footer-informacion {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding: 32px max(24px, calc((100vw - 1000px) / 2));
+  box-sizing: border-box;
+  border-top: 1px solid #e4e8f0;
+  background: #fff;
+}
+
+.footer-informacion__principal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.footer-informacion__marca img {
+  display: block;
+  width: min(190px, 30vw);
+  height: auto;
+}
+
+.footer-informacion__contacto h2,
+.footer-informacion__legales h2 {
+  margin: 0 0 12px;
+  color: #202431;
+  font-size: 18px;
+}
+
+.footer-informacion__contacto {
+  text-align: center;
+}
+
+.footer-informacion__botones,
+.footer-informacion__legales-lista {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.footer-informacion__botones button,
+.footer-informacion__legales-lista button {
+  padding: 8px 14px;
+  border: 1px solid #d6dceb;
+  border-radius: 999px;
+  color: #34405b;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.footer-informacion__botones button:hover,
+.footer-informacion__legales-lista button:hover {
+  border-color: #3759c7;
+  color: #3759c7;
+  background: #eef2ff;
+}
+
+.footer-informacion__legales {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1000px;
+  margin: 28px auto 0;
+  padding-top: 20px;
+  border-top: 1px solid #e4e8f0;
+}
+
+.footer-informacion__legales h2 {
+  text-align: center;
+}
+
+.footer-informacion__legales-lista {
+  max-height: 0;
+  margin-top: 0;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    max-height 0.35s ease,
+    margin-top 0.35s ease,
+    opacity 0.3s ease,
+    visibility 0s linear 0.35s;
+}
+
+.footer-informacion__legales-toggle[aria-expanded='true'] + .footer-informacion__legales-lista {
+  max-height: 160px;
+  margin-top: 12px;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    max-height 0.35s ease,
+    margin-top 0.35s ease,
+    opacity 0.3s ease,
+    visibility 0s;
+}
+
+.footer-informacion__legales-toggle:focus-visible,
+.footer-informacion__botones button:focus-visible,
+.footer-informacion__legales-lista button:focus-visible {
+  outline: 2px solid #3759c7;
+  outline-offset: 3px;
+}
+
 @media (max-width: 600px) {
+  .footer-informacion {
+    padding: 28px 20px;
+  }
+
+  .footer-informacion__principal {
+    align-items: center;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .footer-informacion__marca img {
+    width: min(180px, 60vw);
+  }
+
+  .footer-informacion__legales {
+    margin-top: 24px;
+  }
+
   .navbar-informacion__ajustes-panel {
     width: min(80vw, 320px);
   }
@@ -561,6 +730,10 @@ body {
     padding: 36px 24px;
   }
 
+  .page-content--navbar-informacion {
+    padding-top: 300px;
+  }
+
   .navbar:not(.navbar-informacion) {
     padding: 14px 16px;
   }
@@ -587,7 +760,8 @@ body {
   .navbar-informacion__ajustes-panel,
   .navbar-informacion__idioma-capa,
   .navbar-informacion__idioma-dialogo,
-  .navbar-informacion__idiomas button {
+  .navbar-informacion__idiomas button,
+  .footer-informacion__legales-lista {
     transition: none;
   }
 }

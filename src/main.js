@@ -3,22 +3,19 @@ import './style.css';
 // 1. Configuración: cada botón apunta a una carpeta y a sus fragmentos HTML.
 const paginas = {
   informacion: {
-    carpeta: '1 Página_Información',
-    navbar: 'Navbar.html',
+    carpeta: 'Página_Quienes_somos',
     secciones: ['Section.html'],
-    footer: 'Footer.html',
+    usaComponentesCompartidos: true,
   },
   pagina2: {
-    carpeta: '2 Página_',
-    navbar: 'Navbar.html',
+    carpeta: 'Página_Leyes',
     secciones: ['Section.html'],
-    footer: 'Footer.html',
+    usaComponentesCompartidos: true,
   },
   pagina3: {
-    carpeta: '3 Página_',
-    navbar: 'Navbar.html',
+    carpeta: 'Página_Programas',
     secciones: ['Section.html'],
-    footer: 'Footer.html',
+    usaComponentesCompartidos: true,
   },
   pagina4: {
     carpeta: '4 Página_',
@@ -62,6 +59,7 @@ if (!app) {
 let posicionAntesPanelAjustes = null;
 let estilosBodyAntesPanelAjustes = null;
 let idiomaSeleccionado = 'es';
+let ignorarDireccionScrollHasta = 0;
 
 function bloquearScrollFondo() {
   if (posicionAntesPanelAjustes !== null) {
@@ -128,6 +126,17 @@ function cargarFragmento(carpeta, archivo) {
   return html;
 }
 
+function cargarFragmentoRaiz(archivo) {
+  const ruta = `./${archivo}`;
+  const html = fragmentosHtml[ruta];
+
+  if (typeof html !== 'string') {
+    throw new Error(`No se encontró el fragmento compartido ${ruta}.`);
+  }
+
+  return html;
+}
+
 function mostrarPagina(idPagina) {
   const pagina = paginas[idPagina];
 
@@ -135,17 +144,24 @@ function mostrarPagina(idPagina) {
     throw new Error(`No existe la página "${idPagina}".`);
   }
 
-  const navbar = cargarFragmento(pagina.carpeta, pagina.navbar);
+  const navbar = pagina.usaComponentesCompartidos
+    ? cargarFragmentoRaiz('Navbar.html')
+    : cargarFragmento(pagina.carpeta, pagina.navbar);
   const secciones = pagina.secciones
     .map((archivo) => cargarFragmento(pagina.carpeta, archivo))
     .join('\n');
-  const footer = cargarFragmento(pagina.carpeta, pagina.footer);
-  const claseHeader = idPagina === 'informacion' ? ' class="header-informacion"' : '';
+  const footer = pagina.usaComponentesCompartidos
+    ? cargarFragmentoRaiz('Footer.html')
+    : cargarFragmento(pagina.carpeta, pagina.footer);
+  const claseHeader = pagina.usaComponentesCompartidos ? ' class="header-informacion"' : '';
+  const claseContenido = pagina.usaComponentesCompartidos
+    ? 'page-content page-content--navbar-informacion'
+    : 'page-content';
 
   desbloquearScrollFondo();
   app.innerHTML = `
     <header${claseHeader}>${navbar}</header>
-    <main class="page-content">${secciones}</main>
+    <main class="${claseContenido}">${secciones}</main>
     <footer>${footer}</footer>
   `;
 
@@ -155,6 +171,28 @@ function mostrarPagina(idPagina) {
 // Un solo listener sirve para los botones aunque se vuelva a crear la navbar.
 app.addEventListener('click', (evento) => {
   if (!(evento.target instanceof Element)) {
+    return;
+  }
+
+  const botonLegales = evento.target.closest('.footer-informacion__legales-toggle');
+
+  if (botonLegales) {
+    const expandido = botonLegales.getAttribute('aria-expanded') !== 'true';
+    const listaLegales = document.querySelector(`#${botonLegales.getAttribute('aria-controls')}`);
+    ignorarDireccionScrollHasta = performance.now() + 450;
+    direccionScroll = 0;
+    recorridoScroll = 0;
+    botonLegales.setAttribute('aria-expanded', String(expandido));
+    botonLegales.setAttribute(
+      'aria-label',
+      expandido ? 'Ocultar información legal' : 'Mostrar información legal',
+    );
+    botonLegales.setAttribute(
+      'title',
+      expandido ? 'Ocultar información legal' : 'Mostrar información legal',
+    );
+    botonLegales.replaceChildren(expandido ? '↑' : '↓');
+    listaLegales?.setAttribute('aria-hidden', String(!expandido));
     return;
   }
 
@@ -269,6 +307,15 @@ let direccionScroll = 0;
 let recorridoScroll = 0;
 
 function actualizarProgresoScroll() {
+  const raiz = document.documentElement;
+  const velocidadParallax = Number.parseFloat(
+    getComputedStyle(raiz).getPropertyValue('--fondo-exterior-velocidad-parallax'),
+  );
+  raiz.style.setProperty(
+    '--fondo-exterior-desplazamiento',
+    `${-window.scrollY * velocidadParallax}px`,
+  );
+
   const marca = app.querySelector('.navbar-informacion__marca');
 
   if (!marca) {
@@ -290,6 +337,12 @@ window.addEventListener(
     const posicionActual = window.scrollY;
     const diferencia = posicionActual - ultimaPosicionScroll;
     ultimaPosicionScroll = posicionActual;
+
+    if (performance.now() < ignorarDireccionScrollHasta) {
+      direccionScroll = 0;
+      recorridoScroll = 0;
+      return;
+    }
 
     if (!navbar || posicionActual <= 20) {
       navbar?.classList.remove('navbar-informacion--enlaces-ocultos');
