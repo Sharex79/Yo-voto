@@ -1,9 +1,37 @@
-<nav class="navbar" aria-label="Navegación principal">
-  <button type="button" data-page="informacion">1. Información</button>
-  <button type="button" data-page="pagina2">2. Página</button>
-  <button type="button" data-page="pagina3">3. Página</button>
-  <button type="button" data-page="pagina4">4. Página</button>
-  <button type="button" data-page="pagina5">5. Página</button>
-  <button type="button" data-page="dinamica">A1. Dinámica</button>
-  <button type="button" data-page="comparacion">A2. Comparación</button>
+<!-- INICIO: navbar modular de la página 1 -->
+<nav id="navegacion-informacion" class="navbar navbar-informacion" aria-label="Navegación principal">
+  <div class="navbar-informacion__marca">
+    <button class="navbar-informacion__icono" type="button" aria-label="Ajustes" title="Ajustes">
+      <img
+        src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&amp;fit=crop&amp;w=96&amp;h=96&amp;q=80"
+        alt=""
+      />
+    </button>
+    <img class="navbar-informacion__logo" src="/yo-voto.svg" alt="Yo Voto" />
+    <button class="navbar-informacion__icono" type="button" aria-label="Perfil e ideas" title="Perfil e ideas">
+      <img
+        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&amp;fit=crop&amp;w=96&amp;h=96&amp;q=80"
+        alt=""
+      />
+    </button>
+  </div>
+  <div class="navbar-informacion__links">
+    <button type="button" data-page="informacion">Información</button>
+    <button type="button" data-page="pagina2">Página 2</button>
+    <button type="button" data-page="pagina3">Página 3</button>
+    <button type="button" data-page="pagina4">Página 4</button>
+    <button type="button" data-page="pagina5">Página 5</button>
+    <button type="button" data-page="dinamica">Dinámica</button>
+    <button type="button" data-page="comparacion">A2. Comparación</button>
+  </div>
 </nav>
+<button
+  class="navbar-informacion__toggle"
+  type="button"
+  aria-controls="navegacion-informacion"
+  aria-expanded="true"
+  aria-label="Ocultar navegación"
+>
+  ↑
+</button>
+<!-- FIN: navbar modular de la página 1 -->

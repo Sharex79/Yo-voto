@@ -1,111 +1,323 @@
-/* 1. Valores compartidos: cambia estos valores para actualizar el tema entero. */
 :root {
-  --color-fondo-pagina: #f4f6fb;
-  --color-fondo-contenedor: #fff;
-  --color-texto-principal: #202431;
-  --color-texto-secundario: #596277;
-  --color-texto-suave: #687187;
-  --color-acento: #3759c7;
-  --color-borde: #e4e8f0;
-  --color-borde-boton: #d6dceb;
-
-  --espacio-pequeno: 8px;
-  --espacio-medio: 16px;
-  --ancho-maximo-contenido: 1000px;
-
   font-family: system-ui, 'Segoe UI', sans-serif;
-  color: var(--color-texto-principal);
-  background: var(--color-fondo-pagina);
+  color: #202431;
+  background: #f4f6fb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 2. Estilos base: reglas generales para toda la aplicación. */
 body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
 }
 
-/* 3. Estructura compartida: contenedor que envuelve navbar, main y footer. */
 #app {
   display: flex;
   flex-direction: column;
-  width: min(100% - 32px, var(--ancho-maximo-contenido));
+  width: min(100%, 1000px);
   min-height: 100vh;
   margin: 0 auto;
-  background: var(--color-fondo-contenedor);
+  background: #fff;
   box-shadow: 0 0 32px rgb(34 49 85 / 8%);
+  overflow-anchor: none;
 }
 
-/* 4. Componente compartido: barra de navegación y botones para cambiar de página. */
-.navbar {
+/* INICIO: estilos exclusivos de la navbar de la página 1 */
+.header-informacion {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  overflow-anchor: none;
+}
+
+.navbar-informacion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-height: 320px;
+  margin: 0 20px;
+  padding: 16px 16px 0;
+  overflow: hidden;
+  border-radius: 0 0 18px 18px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgb(34 49 85 / 10%);
+  opacity: 1;
+  transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.2s ease;
+}
+
+.header-informacion--oculta .navbar-informacion {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+}
+
+.navbar-informacion__marca {
+  --progreso-scroll: 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: 96px 1fr auto 1fr 96px;
+  align-items: center;
+  width: 100%;
+}
+
+.navbar-informacion__marca > .navbar-informacion__icono:first-child {
+  grid-column: 1;
+}
+
+.navbar-informacion__marca > .navbar-informacion__logo {
+  grid-column: 3;
+}
+
+.navbar-informacion__marca > .navbar-informacion__icono:last-child {
+  grid-column: 5;
+}
+
+.navbar-informacion__marca::before,
+.navbar-informacion__marca::after {
+  position: absolute;
+  top: 50%;
+  left: 48px;
+  height: 2px;
+  content: '';
+  pointer-events: none;
+}
+
+.navbar-informacion__marca::before {
+  right: 48px;
+  background: #dce2ee;
+}
+
+.navbar-informacion__marca::after {
+  z-index: 1;
+  width: calc(100% - 96px);
+  transform: scaleX(var(--progreso-scroll));
+  transform-origin: left center;
+  background: #3759c7;
+}
+
+.navbar-informacion__icono {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 75px;
+  height: 75px;
+  place-items: center;
+  justify-self: center;
+  padding: 3px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.navbar-informacion__icono:hover {
+  transform: scale(1.08);
+}
+
+.navbar-informacion__icono:focus-visible {
+  outline: 2px solid #3759c7;
+  outline-offset: 3px;
+}
+
+.navbar-informacion__icono img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.navbar-informacion__logo {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: min(220px, 70vw);
+  height: auto;
+}
+
+.navbar-informacion__links {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--espacio-pequeno);
-  padding: 18px 24px;
-  border-bottom: 1px solid var(--color-borde);
-  background: var(--color-fondo-contenedor);
+  justify-content: center;
+  gap: 8px 20px;
+  max-height: 200px;
+  padding-bottom: 14px;
+  overflow: hidden;
+  opacity: 1;
+  transition:
+    max-height 0.3s ease,
+    padding-bottom 0.3s ease,
+    opacity 0.2s ease,
+    transform 0.3s ease,
+    visibility 0.3s;
+  visibility: visible;
 }
 
-/* Botones que seleccionan una página dentro de la barra de navegación. */
-.navbar button[data-page] {
-  padding: 8px 12px;
-  border: 1px solid var(--color-borde-boton);
-  border-radius: var(--espacio-pequeno);
+.navbar-informacion--enlaces-ocultos .navbar-informacion__links {
+  max-height: 0;
+  padding-bottom: 0;
+  transform: translateY(-8px);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.navbar-informacion__toggle {
+  display: block;
+  min-width: 56px;
+  margin: 8px auto 0;
+  padding: 3px 18px 5px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: #142b59;
+  box-shadow: 0 4px 12px rgb(34 49 85 / 18%);
+  font: inherit;
+  font-size: 20px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 0.5s ease, transform 0.5s ease;
+}
+
+.navbar-informacion__toggle:hover {
+  background: #3759c7;
+  transform: translateY(1px);
+}
+
+.navbar-informacion__toggle:focus-visible {
+  outline: 2px solid #3759c7;
+  outline-offset: 3px;
+}
+
+.navbar-informacion__links button {
+  padding: 8px 2px 10px;
+  border: 0;
+  border-bottom: 2px solid currentColor;
   color: #34405b;
-  background: var(--color-fondo-contenedor);
+  background: transparent;
   font: inherit;
   cursor: pointer;
 }
 
-/* Apariencia del botón al pasar el ratón o cuando representa la página actual. */
-.navbar button[data-page]:hover,
-.navbar button[data-page][aria-current='page'] {
-  border-color: var(--color-acento);
-  color: var(--color-fondo-contenedor);
-  background: var(--color-acento);
+.navbar-informacion__links button:hover,
+.navbar-informacion__links button[aria-current='page'] {
+  color: #3759c7;
 }
 
-/* 5. Contenido común: zona principal donde se insertan las secciones HTML. */
+.navbar-informacion__links button:focus-visible {
+  outline: 2px solid #3759c7;
+  outline-offset: 3px;
+}
+/* FIN: estilos exclusivos de la navbar de la página 1 */
+
+/* Navbar de las demás páginas: se conserva su apariencia anterior. */
+.navbar:not(.navbar-informacion) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 18px 24px;
+  border-bottom: 1px solid #e4e8f0;
+}
+
+.navbar:not(.navbar-informacion) button[data-page] {
+  padding: 8px 12px;
+  border: 1px solid #d6dceb;
+  border-radius: 8px;
+  color: #34405b;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.navbar:not(.navbar-informacion) button[data-page]:hover,
+.navbar:not(.navbar-informacion) button[data-page][aria-current='page'] {
+  border-color: #3759c7;
+  color: #fff;
+  background: #3759c7;
+}
+
 .page-content {
   flex: 1;
+  min-height: 200vh;
   padding: 48px 32px;
+  box-sizing: border-box;
 }
 
-/* Título principal que aparece dentro del contenido de cada página. */
 .page-content h1 {
   margin: 0 0 12px;
-  color: var(--color-texto-principal);
   font-size: clamp(28px, 5vw, 40px);
 }
 
-/* Texto descriptivo que aparece dentro del contenido de cada página. */
 .page-content p {
   margin: 0;
-  color: var(--color-texto-secundario);
+  color: #596277;
   line-height: 1.6;
 }
 
-/* 6. Componente compartido: pie de página de cada carpeta. */
 .footer {
-  padding: var(--espacio-medio) 24px;
-  border-top: 1px solid var(--color-borde);
-  color: var(--color-texto-suave);
+  padding: 16px 24px;
+  border-top: 1px solid #e4e8f0;
+  color: #687187;
   font-size: 14px;
 }
 
-/* 7. Ajustes responsive: cambios para móviles y pantallas estrechas. */
 @media (max-width: 600px) {
-  /* El contenido necesita menos margen lateral en una pantalla pequeña. */
+  .navbar-informacion {
+    margin: 0 12px;
+    padding: 14px 12px 0;
+  }
+
+  .navbar-informacion__icono {
+    width: 64px;
+    height: 64px;
+  }
+
+  .navbar-informacion__marca {
+    grid-template-columns: 64px 1fr auto 1fr 64px;
+  }
+
+  .navbar-informacion__marca::before,
+  .navbar-informacion__marca::after {
+    left: 32px;
+  }
+
+  .navbar-informacion__marca::before {
+    right: 32px;
+  }
+
+  .navbar-informacion__marca::after {
+    width: calc(100% - 64px);
+  }
+
+  .navbar-informacion__logo {
+    width: min(150px, 45vw);
+  }
+
+  .navbar-informacion {
+    max-height: 360px;
+  }
+
+  .navbar-informacion__links {
+    gap: 6px 14px;
+    max-height: 260px;
+  }
+
   .page-content {
     padding: 36px 24px;
   }
 
-  /* Los botones pueden saltar a otra fila si no caben en una sola. */
-  .navbar {
+  .navbar:not(.navbar-informacion) {
     padding: 14px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar-informacion,
+  .navbar-informacion__toggle {
+    transition: none;
   }
 }

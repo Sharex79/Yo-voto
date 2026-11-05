@@ -83,9 +83,10 @@ function mostrarPagina(idPagina) {
     .map((archivo) => cargarFragmento(pagina.carpeta, archivo))
     .join('\n');
   const footer = cargarFragmento(pagina.carpeta, pagina.footer);
+  const claseHeader = idPagina === 'informacion' ? ' class="header-informacion"' : '';
 
   app.innerHTML = `
-    <header>${navbar}</header>
+    <header${claseHeader}>${navbar}</header>
     <main class="page-content">${secciones}</main>
     <footer>${footer}</footer>
   `;
@@ -99,6 +100,22 @@ app.addEventListener('click', (evento) => {
     return;
   }
 
+  const controlNavbar = evento.target.closest('.navbar-informacion__toggle');
+
+  if (controlNavbar) {
+    const header = controlNavbar.closest('.header-informacion');
+
+    if (!header) {
+      return;
+    }
+
+    const oculta = header.classList.toggle('header-informacion--oculta');
+    controlNavbar.setAttribute('aria-expanded', String(!oculta));
+    controlNavbar.setAttribute('aria-label', oculta ? 'Mostrar navegación' : 'Ocultar navegación');
+    controlNavbar.textContent = oculta ? '↓' : '↑';
+    return;
+  }
+
   const boton = evento.target.closest('[data-page]');
 
   if (boton?.dataset.page) {
@@ -106,4 +123,58 @@ app.addEventListener('click', (evento) => {
   }
 });
 
+let ultimaPosicionScroll = window.scrollY;
+let direccionScroll = 0;
+let recorridoScroll = 0;
+
+function actualizarProgresoScroll() {
+  const marca = app.querySelector('.navbar-informacion__marca');
+
+  if (!marca) {
+    return;
+  }
+
+  const recorridoMaximo = document.documentElement.scrollHeight - window.innerHeight;
+  const progreso = recorridoMaximo > 0 ? Math.min(window.scrollY / recorridoMaximo, 1) : 0;
+
+  marca.style.setProperty('--progreso-scroll', String(progreso));
+}
+
+window.addEventListener(
+  'scroll',
+  () => {
+    actualizarProgresoScroll();
+
+    const navbar = app.querySelector('.navbar-informacion');
+    const posicionActual = window.scrollY;
+    const diferencia = posicionActual - ultimaPosicionScroll;
+    ultimaPosicionScroll = posicionActual;
+
+    if (!navbar || posicionActual <= 20) {
+      navbar?.classList.remove('navbar-informacion--enlaces-ocultos');
+      direccionScroll = 0;
+      recorridoScroll = 0;
+      return;
+    }
+
+    if (diferencia === 0) {
+      return;
+    }
+
+    const nuevaDireccion = Math.sign(diferencia);
+    recorridoScroll =
+      nuevaDireccion === direccionScroll ? recorridoScroll + Math.abs(diferencia) : Math.abs(diferencia);
+    direccionScroll = nuevaDireccion;
+
+    if (recorridoScroll >= 24) {
+      navbar.classList.toggle('navbar-informacion--enlaces-ocultos', nuevaDireccion > 0);
+      recorridoScroll = 0;
+    }
+  },
+  { passive: true },
+);
+
+window.addEventListener('resize', actualizarProgresoScroll);
+
 mostrarPagina('informacion');
+actualizarProgresoScroll();
