@@ -3,6 +3,12 @@ import './navbar.css';
 
 // 1. Configuración: cada botón apunta a una carpeta y a sus fragmentos HTML.
 const paginas = {
+  inicio: {
+    carpeta: 'Página_Inicio',
+    secciones: ['Section.html'],
+    usaComponentesCompartidos: true,
+    esPortada: true,
+  },
   informacion: {
     carpeta: 'Página_Quienes_somos',
     secciones: ['Section.html'],
@@ -63,6 +69,7 @@ let idiomaSeleccionado = 'es';
 let ignorarDireccionScrollHasta = 0;
 let paginaActual = null;
 let transicionPaginaEnCurso = false;
+const navbarMovilMedia = window.matchMedia('(max-width: 700px)');
 
 function bloquearScrollFondo() {
   if (posicionAntesPanelAjustes !== null) {
@@ -101,7 +108,11 @@ function cerrarPanelAjustes(header) {
   const botonAjustes = header.querySelector('.navbar-informacion__ajustes');
   const controlNavbar = header.querySelector('.navbar-informacion__toggle');
 
-  header.classList.remove('header-informacion--oculta', 'header-informacion--ajustes-abiertos');
+  header.classList.remove(
+    'header-informacion--oculta',
+    'header-informacion--ajustes-abiertos',
+    'header-informacion--scroll-oculto',
+  );
   capa?.classList.remove('navbar-informacion__ajustes-capa--abierta');
   capa?.setAttribute('aria-hidden', 'true');
   botonAjustes?.setAttribute('aria-expanded', 'false');
@@ -147,25 +158,31 @@ function mostrarPagina(idPagina) {
     throw new Error(`No existe la página "${idPagina}".`);
   }
 
-  const navbar = pagina.usaComponentesCompartidos
-    ? cargarFragmentoRaiz('Navbar.html')
-    : cargarFragmento(pagina.carpeta, pagina.navbar);
+  const navbar = pagina.mostrarNavbar === false
+    ? ''
+    : pagina.usaComponentesCompartidos
+      ? cargarFragmentoRaiz('Navbar.html')
+      : cargarFragmento(pagina.carpeta, pagina.navbar);
   const secciones = pagina.secciones
     .map((archivo) => cargarFragmento(pagina.carpeta, archivo))
     .join('\n');
-  const footer = pagina.usaComponentesCompartidos
-    ? cargarFragmentoRaiz('Footer.html')
-    : cargarFragmento(pagina.carpeta, pagina.footer);
+  const footer = pagina.mostrarFooter === false
+    ? ''
+    : pagina.usaComponentesCompartidos
+      ? cargarFragmentoRaiz('Footer.html')
+      : cargarFragmento(pagina.carpeta, pagina.footer);
   const claseHeader = pagina.usaComponentesCompartidos ? ' class="header-informacion"' : '';
-  const claseContenido = pagina.usaComponentesCompartidos
-    ? 'page-content page-content--navbar-informacion'
-    : 'page-content';
+  const claseContenido = pagina.esPortada
+    ? 'page-content page-content--portada'
+    : pagina.usaComponentesCompartidos
+      ? 'page-content page-content--navbar-informacion'
+      : 'page-content';
 
   desbloquearScrollFondo();
   app.innerHTML = `
-    <header${claseHeader}>${navbar}</header>
+    ${navbar ? `<header${claseHeader}>${navbar}</header>` : ''}
     <main class="${claseContenido}">${secciones}</main>
-    <footer>${footer}</footer>
+    ${footer ? `<footer>${footer}</footer>` : ''}
   `;
 
   app.querySelector(`[data-page="${idPagina}"]`)?.setAttribute('aria-current', 'page');
@@ -183,6 +200,13 @@ function actualizarContenidoCompartido(idPagina) {
     .map((archivo) => cargarFragmento(pagina.carpeta, archivo))
     .join('\n');
   contenido.classList.remove('page-content--salida', 'page-content--entrada');
+  contenido.classList.remove(
+    'page-content--portada',
+    'page-content--navbar-informacion',
+  );
+  contenido.classList.add(
+    pagina.esPortada ? 'page-content--portada' : 'page-content--navbar-informacion',
+  );
   app.querySelectorAll('[data-page][aria-current="page"]').forEach((boton) => {
     boton.removeAttribute('aria-current');
   });
@@ -198,6 +222,7 @@ async function cambiarPagina(idPagina) {
 
   const contenidoActual = app.querySelector('.page-content');
   const movimientoReducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({ top: 0, behavior: movimientoReducido ? 'instant' : 'smooth' });
   const conservarComponentesCompartidos =
     paginas[paginaActual]?.usaComponentesCompartidos &&
     paginas[idPagina]?.usaComponentesCompartidos;
@@ -275,9 +300,15 @@ app.addEventListener('click', (evento) => {
   const capaIdioma = evento.target.closest('.navbar-informacion__idioma-capa');
   const capaAjustes = evento.target.closest('.navbar-informacion__ajustes-capa');
   const botonAjustes = evento.target.closest('.navbar-informacion__ajustes');
+  const botonCerrarAjustes = evento.target.closest('.navbar-informacion__ajustes-cerrar');
   const botonPaginaPanel = evento.target.closest(
     '.navbar-informacion__ajustes-panel [data-page]',
   );
+
+  if (botonCerrarAjustes && cabeceraInformacion) {
+    cerrarPanelAjustes(cabeceraInformacion);
+    return;
+  }
 
   if (botonPaginaPanel?.dataset.page && cabeceraInformacion) {
     evento.preventDefault();
@@ -312,14 +343,17 @@ app.addEventListener('click', (evento) => {
     return;
   }
 
-  const botonInicio = evento.target.closest(
-    '.navbar-informacion__logo-boton, .footer-informacion__marca',
-  );
+  const logoNavbar = evento.target.closest('.navbar-informacion__logo-boton');
+  const botonInicio = logoNavbar ?? evento.target.closest('.footer-informacion__marca');
 
   if (botonInicio) {
     evento.preventDefault();
-    const movimientoReducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.scrollTo({ top: 0, behavior: movimientoReducido ? 'instant' : 'smooth' });
+    if (paginaActual !== 'inicio') {
+      void cambiarPagina('inicio');
+    } else {
+      const movimientoReducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: movimientoReducido ? 'instant' : 'smooth' });
+    }
     return;
   }
 
@@ -335,7 +369,11 @@ app.addEventListener('click', (evento) => {
     const controlNavbar = cabeceraInformacion.querySelector('.navbar-informacion__toggle');
     const abiertos = cabeceraInformacion.classList.contains('header-informacion--ajustes-abiertos');
 
-    cabeceraInformacion.classList.toggle('header-informacion--oculta', !abiertos);
+    if (navbarMovilMedia.matches) {
+      cabeceraInformacion.classList.remove('header-informacion--scroll-oculto');
+    } else {
+      cabeceraInformacion.classList.toggle('header-informacion--oculta', !abiertos);
+    }
     cabeceraInformacion.classList.toggle('header-informacion--ajustes-abiertos', !abiertos);
     capa?.classList.toggle('navbar-informacion__ajustes-capa--abierta', !abiertos);
     capa?.setAttribute('aria-hidden', String(abiertos));
@@ -375,6 +413,7 @@ app.addEventListener('click', (evento) => {
   const boton = evento.target.closest('[data-page]');
 
   if (boton?.dataset.page) {
+    evento.preventDefault();
     void cambiarPagina(boton.dataset.page);
   }
 });
@@ -424,6 +463,7 @@ window.addEventListener(
     actualizarProgresoScroll();
 
     const navbar = app.querySelector('.navbar-informacion');
+    const header = app.querySelector('.header-informacion');
     const posicionActual = window.scrollY;
     const diferencia = posicionActual - ultimaPosicionScroll;
     ultimaPosicionScroll = posicionActual;
@@ -431,6 +471,41 @@ window.addEventListener(
     if (performance.now() < ignorarDireccionScrollHasta) {
       direccionScroll = 0;
       recorridoScroll = 0;
+      return;
+    }
+
+    if (navbarMovilMedia.matches) {
+      navbar?.classList.remove(
+        'navbar-informacion--enlaces-ocultos',
+        'navbar-informacion--compacta',
+      );
+
+      if (!navbar || !header || header.classList.contains('header-informacion--ajustes-abiertos')) {
+        direccionScroll = 0;
+        recorridoScroll = 0;
+        return;
+      }
+
+      if (posicionActual <= 20) {
+        header.classList.remove('header-informacion--scroll-oculto');
+        direccionScroll = 0;
+        recorridoScroll = 0;
+        return;
+      }
+
+      if (diferencia === 0) {
+        return;
+      }
+
+      const nuevaDireccion = Math.sign(diferencia);
+      recorridoScroll =
+        nuevaDireccion === direccionScroll ? recorridoScroll + Math.abs(diferencia) : Math.abs(diferencia);
+      direccionScroll = nuevaDireccion;
+
+      if (recorridoScroll >= 24) {
+        header.classList.toggle('header-informacion--scroll-oculto', nuevaDireccion > 0);
+        recorridoScroll = 0;
+      }
       return;
     }
 
@@ -460,8 +535,21 @@ window.addEventListener(
   { passive: true },
 );
 
-window.addEventListener('resize', actualizarProgresoScroll);
+window.addEventListener('resize', () => {
+  actualizarProgresoScroll();
+  const header = app.querySelector('.header-informacion');
+  const navbar = app.querySelector('.navbar-informacion');
 
-mostrarPagina('informacion');
-paginaActual = 'informacion';
+  if (navbarMovilMedia.matches) {
+    navbar?.classList.remove(
+      'navbar-informacion--enlaces-ocultos',
+      'navbar-informacion--compacta',
+    );
+  } else {
+    header?.classList.remove('header-informacion--scroll-oculto');
+  }
+});
+
+mostrarPagina('inicio');
+paginaActual = 'inicio';
 actualizarProgresoScroll();
