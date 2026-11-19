@@ -1,5 +1,6 @@
 import './style.css';
 import './navbar.css';
+import './responsive.css';
 
 // 1. Configuración: cada botón apunta a una carpeta y a sus fragmentos HTML.
 const paginas = {

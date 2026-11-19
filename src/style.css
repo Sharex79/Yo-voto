@@ -40,12 +40,6 @@ body::before {
   filter: blur(var(--fondo-exterior-blur));
 }
 
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --fondo-exterior-velocidad-parallax: 0;
-  }
-}
-
 #app {
   display: flex;
   flex-direction: column;
@@ -275,7 +269,8 @@ body::before {
   color: #252525;
 }
 
-.page-content .portada__manifiesto-eyebrow {
+.page-content .etiqueta-seccion {
+  margin: 0 0 8px;
   color: #e34b43;
   font-size: 10px;
   font-weight: 700;
@@ -357,39 +352,28 @@ body::before {
   line-height: 1.2;
 }
 
-.quienes {
+.contenido-seccion {
   width: min(100%, 760px);
   margin: 0 auto;
   color: #252525;
 }
 
-.page-content .quienes__titulo {
+.page-content .titulo-seccion {
   display: table;
   position: relative;
-  margin: 0 0 44px;
+  margin: 0 0 32px;
   color: #252525;
-  font-size: clamp(30px, 8vw, 42px);
+  font-size: clamp(30px, 8vw, 48px);
   font-weight: 800;
-  letter-spacing: -0.07em;
-  line-height: 1;
-  text-align: left;
+  letter-spacing: -0.075em;
+  line-height: 0.98;
 }
 
-.page-content .quienes__eyebrow {
-  margin: 0 0 8px;
-  color: #e34b43;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
-.quienes__titulo::after {
+.titulo-seccion::after {
   position: absolute;
-  right: 0;
-  bottom: -13px;
   left: 0;
+  bottom: -11px;
+  width: min(240px, 100%);
   height: 5px;
   border-top: 3px solid #e34b43;
   border-bottom: 2px solid #e34b43;
@@ -444,17 +428,17 @@ body::before {
   padding-top: 18px;
 }
 
-.quienes__contenido h2 {
-  margin: 0 0 10px;
+.page-content .subtitulo-seccion {
+  margin: 0 0 14px;
   color: #252525;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(22px, 6vw, 28px);
+  font-size: clamp(23px, 6vw, 32px);
   font-weight: 700;
   letter-spacing: -0.035em;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
-.page-content .quienes__contenido p {
+.page-content .texto-seccion {
   margin: 0 0 12px;
   color: #777;
   font-size: 14px;
@@ -482,127 +466,8 @@ body::before {
   outline-offset: 3px;
 }
 
-.legalidad {
-  width: min(100%, 760px);
-  margin: 0 auto;
-  color: #252525;
-}
-
-.page-content .legalidad__etiqueta {
-  margin: 0 0 8px;
-  color: #e34b43;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
-.leyes {
-  width: min(100%, 760px);
-  margin: 0 auto;
-  color: #252525;
-}
-
-.page-content .leyes__eyebrow {
-  margin: 0 0 8px;
-  color: #e34b43;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
-.page-content .leyes__titulo {
-  display: table;
-  position: relative;
-  margin: 0 0 36px;
-  color: #252525;
-  font-size: clamp(32px, 8vw, 52px);
-  font-weight: 800;
-  letter-spacing: -0.075em;
-  line-height: 0.98;
-}
-
-.leyes__titulo::after {
-  position: absolute;
-  right: 0;
-  bottom: -11px;
-  left: 0;
-  width: min(240px, 70vw);
-  height: 5px;
-  border-top: 3px solid #e34b43;
-  border-bottom: 2px solid #e34b43;
-  content: '';
-  transform: skew(-18deg) rotate(-1deg);
-}
-
-.leyes__contenido h2 {
-  margin: 0 0 14px;
-  color: #252525;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(23px, 6vw, 32px);
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.1;
-}
-
-.page-content .leyes__contenido p {
-  margin: 0 0 12px;
-  color: #777;
-  font-size: 14px;
-  line-height: 1.65;
-}
-
 .portada__manifiesto {
   scroll-margin-top: 96px;
-}
-
-.programas {
-  width: min(100%, 760px);
-  margin: 0 auto;
-  color: #252525;
-}
-
-.page-content .programas__eyebrow {
-  margin: 0 0 8px;
-  color: #e34b43;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
-.page-content .programas__titulo {
-  position: relative;
-  margin: 0 0 20px;
-  color: #252525;
-  font-size: clamp(32px, 8vw, 52px);
-  font-weight: 800;
-  letter-spacing: -0.075em;
-  line-height: 0.98;
-}
-
-.programas__titulo::after {
-  position: absolute;
-  right: 0;
-  bottom: -11px;
-  left: 0;
-  width: min(240px, 70%);
-  height: 5px;
-  border-top: 3px solid #e34b43;
-  border-bottom: 2px solid #e34b43;
-  content: '';
-  transform: skew(-18deg) rotate(-1deg);
-}
-
-.page-content .programas__descripcion {
-  margin: 0 0 12px;
-  color: #777;
-  font-size: 14px;
-  line-height: 1.65;
 }
 
 .programas__rejilla {
@@ -816,32 +681,6 @@ body::before {
   transform: translateY(-3px);
 }
 
-@media (min-width: 700px) {
-  .portada__hero {
-    padding: 24px;
-  }
-
-  .programas__rejilla {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .quienes__marca-nombre {
-    font-size: 68px;
-  }
-}
-
-@media (max-width: 700px) {
-  .page-content--portada {
-    padding: 112px 14px 32px;
-  }
-}
-
-@media (max-width: 359px) {
-  .programas__rejilla {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 @keyframes page-content-desaparece {
   to {
     opacity: 0;
@@ -1024,50 +863,4 @@ body::before {
 .footer-informacion__legales-lista button:focus-visible {
   outline: 2px solid #3759c7;
   outline-offset: 3px;
-}
-
-@media (max-width: 600px) {
-  .footer-informacion {
-    padding: 28px 20px;
-  }
-
-  .footer-informacion__principal {
-    align-items: center;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .footer-informacion__marca img {
-    width: min(180px, 60vw);
-  }
-
-  .footer-informacion__legales {
-    margin-top: 24px;
-  }
-
-  .page-content {
-    padding: 36px 24px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .footer-informacion__legales-lista {
-    transition: none;
-  }
-
-  .programas__tarjeta,
-  .programas__slot,
-  .programas__modal,
-  .programas__partido {
-    transition: none;
-  }
-
-  .page-content {
-    transition: none;
-  }
-
-  .page-content--entrada,
-  .page-content--salida {
-    animation: none;
-  }
 }
