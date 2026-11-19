@@ -172,10 +172,15 @@ function mostrarPagina(idPagina) {
       ? cargarFragmentoRaiz('Footer.html')
       : cargarFragmento(pagina.carpeta, pagina.footer);
   const claseHeader = pagina.usaComponentesCompartidos ? ' class="header-informacion"' : '';
+  const modificadorContenido = idPagina === 'informacion'
+    ? ' page-content--quienes'
+    : idPagina === 'pagina3'
+      ? ' page-content--programas'
+      : '';
   const claseContenido = pagina.esPortada
     ? 'page-content page-content--portada'
     : pagina.usaComponentesCompartidos
-      ? 'page-content page-content--navbar-informacion'
+      ? `page-content page-content--navbar-informacion${modificadorContenido}`
       : 'page-content';
 
   desbloquearScrollFondo();
@@ -203,10 +208,17 @@ function actualizarContenidoCompartido(idPagina) {
   contenido.classList.remove(
     'page-content--portada',
     'page-content--navbar-informacion',
+    'page-content--quienes',
+    'page-content--programas',
   );
   contenido.classList.add(
     pagina.esPortada ? 'page-content--portada' : 'page-content--navbar-informacion',
   );
+  if (idPagina === 'informacion') {
+    contenido.classList.add('page-content--quienes');
+  } else if (idPagina === 'pagina3') {
+    contenido.classList.add('page-content--programas');
+  }
   app.querySelectorAll('[data-page][aria-current="page"]').forEach((boton) => {
     boton.removeAttribute('aria-current');
   });
@@ -215,14 +227,16 @@ function actualizarContenidoCompartido(idPagina) {
   });
 }
 
-async function cambiarPagina(idPagina) {
+async function cambiarPagina(idPagina, { desplazarAlInicio = true } = {}) {
   if (idPagina === paginaActual || transicionPaginaEnCurso) {
     return;
   }
 
   const contenidoActual = app.querySelector('.page-content');
   const movimientoReducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  window.scrollTo({ top: 0, behavior: movimientoReducido ? 'instant' : 'smooth' });
+  if (desplazarAlInicio) {
+    window.scrollTo({ top: 0, behavior: movimientoReducido ? 'instant' : 'smooth' });
+  }
   const conservarComponentesCompartidos =
     paginas[paginaActual]?.usaComponentesCompartidos &&
     paginas[idPagina]?.usaComponentesCompartidos;
@@ -268,9 +282,116 @@ async function cambiarPagina(idPagina) {
   }
 }
 
+async function irAlManifiesto() {
+  if (paginaActual !== 'inicio') {
+    await cambiarPagina('inicio', { desplazarAlInicio: false });
+  }
+
+  const manifiesto = app.querySelector('#portada-manifiesto');
+
+  if (!(manifiesto instanceof HTMLElement)) {
+    throw new Error('No se encontró el manifiesto en la página de inicio.');
+  }
+
+  const movimientoReducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  manifiesto.scrollIntoView({
+    behavior: movimientoReducido ? 'instant' : 'smooth',
+    block: 'start',
+  });
+}
+
+function cerrarDialogoPrograma(dialogo) {
+  if (!dialogo.open || dialogo.classList.contains('programas__modal--cerrando')) {
+    return;
+  }
+
+  dialogo.classList.remove('programas__modal--abierta');
+  dialogo.classList.add('programas__modal--cerrando');
+  window.setTimeout(() => {
+    if (dialogo.open) {
+      dialogo.close();
+    }
+  }, 220);
+}
+
 // Un solo listener sirve para los botones aunque se vuelva a crear la navbar.
 app.addEventListener('click', (evento) => {
   if (!(evento.target instanceof Element)) {
+    return;
+  }
+
+  const enlaceManifiesto = evento.target.closest('[data-accion="ir-al-manifiesto"]');
+
+  if (enlaceManifiesto) {
+    evento.preventDefault();
+    void irAlManifiesto();
+    return;
+  }
+
+  const tarjetaPrograma = evento.target.closest('.programas__slot');
+
+  if (tarjetaPrograma) {
+    const paginaProgramas = tarjetaPrograma.closest('.programas');
+    const dialogoPrograma = paginaProgramas?.querySelector('.programas__modal');
+    const imagenPrograma = dialogoPrograma?.querySelector('.programas__modal-imagen');
+    const tituloPrograma = dialogoPrograma?.querySelector('#programas-modal-titulo');
+    const etiquetaPrograma = dialogoPrograma?.querySelector('.programas__modal-etiqueta');
+    const numeroPrograma = tarjetaPrograma.getAttribute('data-programa-slot');
+    const colorPrograma = tarjetaPrograma.getAttribute('data-color');
+
+    if (
+      !(dialogoPrograma instanceof HTMLDialogElement) ||
+      !(imagenPrograma instanceof HTMLElement) ||
+      !(tituloPrograma instanceof HTMLElement) ||
+      !(etiquetaPrograma instanceof HTMLElement) ||
+      !numeroPrograma ||
+      !colorPrograma
+    ) {
+      throw new Error('No se pudo abrir la ficha del programa seleccionado.');
+    }
+
+    imagenPrograma.dataset.color = colorPrograma;
+    tituloPrograma.textContent = `Partido ${numeroPrograma}`;
+    etiquetaPrograma.textContent = `Espacio ${numeroPrograma}`;
+    dialogoPrograma.onclose = () => {
+      dialogoPrograma.classList.remove(
+        'programas__modal--abierta',
+        'programas__modal--cerrando',
+      );
+      desbloquearScrollFondo();
+    };
+    dialogoPrograma.oncancel = (eventoCancelar) => {
+      eventoCancelar.preventDefault();
+      cerrarDialogoPrograma(dialogoPrograma);
+    };
+    bloquearScrollFondo();
+    dialogoPrograma.showModal();
+    void dialogoPrograma.offsetWidth;
+    dialogoPrograma.classList.add('programas__modal--abierta');
+    return;
+  }
+
+  const botonCerrarPrograma = evento.target.closest('.programas__modal-cerrar');
+
+  if (botonCerrarPrograma) {
+    const dialogo = botonCerrarPrograma.closest('.programas__modal');
+    if (dialogo instanceof HTMLDialogElement) {
+      cerrarDialogoPrograma(dialogo);
+    }
+    return;
+  }
+
+  const enlacePartido = evento.target.closest('.programas__partido');
+
+  if (enlacePartido?.getAttribute('aria-disabled') === 'true') {
+    evento.preventDefault();
+    return;
+  }
+
+  const dialogoPrograma = evento.target.closest('.programas__modal');
+
+  if (dialogoPrograma instanceof HTMLDialogElement && evento.target === dialogoPrograma) {
+    cerrarDialogoPrograma(dialogoPrograma);
     return;
   }
 

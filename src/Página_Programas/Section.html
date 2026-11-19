@@ -1,4 +1,144 @@
-<section>
-  <h1>Página 3</h1>
-  <p>Ahora estás viendo el contenido de la tercera carpeta.</p>
+<section class="programas" id="programas" aria-labelledby="programas-titulo">
+  <p class="programas__eyebrow">El proyecto</p>
+  <h1 class="programas__titulo" id="programas-titulo">Programas Electorales</h1>
+  <p class="programas__descripcion">
+    Somos estudiantes de diseño y programadores. Esta página es un proyecto de clase para
+    facilitar la comprensión de la política y ser parte activa en ella.
+  </p>
+  <p class="programas__descripcion">
+    Una invitación a comparar, conversar y construir tu propia mirada. Porque decidir empieza por
+    entender.
+  </p>
+
+  <div class="programas__rejilla" aria-label="Espacios reservados para programas electorales">
+    <article class="programas__tarjeta">
+      <h2 class="programas__tarjeta-titulo">Partido 01</h2>
+      <button
+        class="programas__slot programas__slot--rojo"
+        type="button"
+        data-programa-slot="01"
+        data-color="rojo"
+        aria-label="Abrir ficha de partido 01"
+      ></button>
+    </article>
+    <article class="programas__tarjeta">
+      <h2 class="programas__tarjeta-titulo">Partido 02</h2>
+      <button
+        class="programas__slot programas__slot--azul"
+        type="button"
+        data-programa-slot="02"
+        data-color="azul"
+        aria-label="Abrir ficha de partido 02"
+      ></button>
+    </article>
+    <article class="programas__tarjeta">
+      <h2 class="programas__tarjeta-titulo">Partido 03</h2>
+      <button
+        class="programas__slot programas__slot--verde"
+        type="button"
+        data-programa-slot="03"
+        data-color="verde"
+        aria-label="Abrir ficha de partido 03"
+      ></button>
+    </article>
+    <article class="programas__tarjeta">
+      <h2 class="programas__tarjeta-titulo">Partido 04</h2>
+      <button
+        class="programas__slot programas__slot--magenta"
+        type="button"
+        data-programa-slot="04"
+        data-color="magenta"
+        aria-label="Abrir ficha de partido 04"
+      ></button>
+    </article>
+    <article class="programas__tarjeta">
+      <h2 class="programas__tarjeta-titulo">Partido 05</h2>
+      <button
+        class="programas__slot programas__slot--amarillo"
+        type="button"
+        data-programa-slot="05"
+        data-color="amarillo"
+        aria-label="Abrir ficha de partido 05"
+      ></button>
+    </article>
+    <article class="programas__tarjeta">
+      <h2 class="programas__tarjeta-titulo">Partido 06</h2>
+      <button
+        class="programas__slot programas__slot--gris"
+        type="button"
+        data-programa-slot="06"
+        data-color="gris"
+        aria-label="Abrir ficha de partido 06"
+      ></button>
+    </article>
+    <article class="programas__tarjeta">
+      <h2 class="programas__tarjeta-titulo">Partido 07</h2>
+      <button
+        class="programas__slot programas__slot--coral"
+        type="button"
+        data-programa-slot="07"
+        data-color="coral"
+        aria-label="Abrir ficha de partido 07"
+      ></button>
+    </article>
+    <article class="programas__tarjeta">
+      <h2 class="programas__tarjeta-titulo">Partido 08</h2>
+      <button
+        class="programas__slot programas__slot--violeta"
+        type="button"
+        data-programa-slot="08"
+        data-color="violeta"
+        aria-label="Abrir ficha de partido 08"
+      ></button>
+    </article>
+    <article class="programas__tarjeta">
+      <h2 class="programas__tarjeta-titulo">Partido 09</h2>
+      <button
+        class="programas__slot programas__slot--turquesa"
+        type="button"
+        data-programa-slot="09"
+        data-color="turquesa"
+        aria-label="Abrir ficha de partido 09"
+      ></button>
+    </article>
+    <article class="programas__tarjeta">
+      <h2 class="programas__tarjeta-titulo">Partido 10</h2>
+      <button
+        class="programas__slot programas__slot--oscuro"
+        type="button"
+        data-programa-slot="10"
+        data-color="oscuro"
+        aria-label="Abrir ficha de partido 10"
+      ></button>
+    </article>
+  </div>
+
+  <dialog class="programas__modal" aria-labelledby="programas-modal-titulo">
+    <div class="programas__modal-contenido">
+      <button class="programas__modal-cerrar" type="button" aria-label="Cerrar">
+        <span aria-hidden="true">×</span>
+      </button>
+      <div
+        class="programas__modal-imagen"
+        data-color="rojo"
+        role="img"
+        aria-label="Espacio reservado para la imagen del partido"
+      ></div>
+      <div class="programas__modal-texto">
+        <p class="programas__modal-etiqueta">Espacio 01</p>
+        <h2 id="programas-modal-titulo">Partido 01</h2>
+        <p class="programas__modal-descripcion">
+          Aquí irá la información del programa y sus propuestas.
+        </p>
+        <a
+          class="programas__partido"
+          href="#programas"
+          aria-disabled="true"
+          title="El enlace del partido se añadirá más adelante"
+        >
+          Ir a la página del partido
+        </a>
+      </div>
+    </div>
+  </dialog>
 </section>
