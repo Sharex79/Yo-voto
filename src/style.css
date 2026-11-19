@@ -79,7 +79,9 @@ body::before {
 }
 
 .page-content--quienes,
-.page-content--programas {
+.page-content--programas,
+.page-content--leyes,
+.page-content--legal {
   flex: 0 0 auto;
   min-height: 0;
 }
@@ -364,13 +366,23 @@ body::before {
 .page-content .quienes__titulo {
   display: table;
   position: relative;
-  margin: 0 auto 44px;
+  margin: 0 0 44px;
   color: #252525;
   font-size: clamp(30px, 8vw, 42px);
   font-weight: 800;
   letter-spacing: -0.07em;
   line-height: 1;
-  text-align: center;
+  text-align: left;
+}
+
+.page-content .quienes__eyebrow {
+  margin: 0 0 8px;
+  color: #e34b43;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
 }
 
 .quienes__titulo::after {
@@ -468,6 +480,79 @@ body::before {
 .quienes__manifiesto:focus-visible {
   outline: 3px solid #e34b43;
   outline-offset: 3px;
+}
+
+.legalidad {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  color: #252525;
+}
+
+.page-content .legalidad__etiqueta {
+  margin: 0 0 8px;
+  color: #e34b43;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.leyes {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  color: #252525;
+}
+
+.page-content .leyes__eyebrow {
+  margin: 0 0 8px;
+  color: #e34b43;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.page-content .leyes__titulo {
+  display: table;
+  position: relative;
+  margin: 0 0 36px;
+  color: #252525;
+  font-size: clamp(32px, 8vw, 52px);
+  font-weight: 800;
+  letter-spacing: -0.075em;
+  line-height: 0.98;
+}
+
+.leyes__titulo::after {
+  position: absolute;
+  right: 0;
+  bottom: -11px;
+  left: 0;
+  width: min(240px, 70vw);
+  height: 5px;
+  border-top: 3px solid #e34b43;
+  border-bottom: 2px solid #e34b43;
+  content: '';
+  transform: skew(-18deg) rotate(-1deg);
+}
+
+.leyes__contenido h2 {
+  margin: 0 0 14px;
+  color: #252525;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(23px, 6vw, 32px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+.page-content .leyes__contenido p {
+  margin: 0 0 12px;
+  color: #777;
+  font-size: 14px;
+  line-height: 1.65;
 }
 
 .portada__manifiesto {
@@ -862,6 +947,13 @@ body::before {
   border-color: #3759c7;
   color: #3759c7;
   background: #eef2ff;
+}
+
+.footer-informacion__legales-lista button[aria-current='page'],
+.footer-informacion__legales-lista button[aria-current='page']:hover {
+  border-color: #142b59;
+  color: #fff;
+  background: #142b59;
 }
 
 .footer-informacion__legales {

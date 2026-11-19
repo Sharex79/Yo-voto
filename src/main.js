@@ -14,6 +14,30 @@ const paginas = {
     secciones: ['Section.html'],
     usaComponentesCompartidos: true,
   },
+  avisoLegal: {
+    carpeta: 'Página_Leyes',
+    secciones: ['AvisoLegal.html'],
+    usaComponentesCompartidos: true,
+    esLegal: true,
+  },
+  privacidad: {
+    carpeta: 'Página_Leyes',
+    secciones: ['PoliticaPrivacidad.html'],
+    usaComponentesCompartidos: true,
+    esLegal: true,
+  },
+  cookies: {
+    carpeta: 'Página_Leyes',
+    secciones: ['PoliticaCookies.html'],
+    usaComponentesCompartidos: true,
+    esLegal: true,
+  },
+  accesibilidad: {
+    carpeta: 'Página_Leyes',
+    secciones: ['Accesibilidad.html'],
+    usaComponentesCompartidos: true,
+    esLegal: true,
+  },
   pagina2: {
     carpeta: 'Página_Leyes',
     secciones: ['Section.html'],
@@ -105,7 +129,7 @@ function desbloquearScrollFondo() {
 
 function cerrarPanelAjustes(header) {
   const capa = header.querySelector('.navbar-informacion__ajustes-capa');
-  const botonAjustes = header.querySelector('.navbar-informacion__ajustes');
+  const botonAjustes = header.querySelector('.navbar-informacion__menu');
   const controlNavbar = header.querySelector('.navbar-informacion__toggle');
 
   header.classList.remove(
@@ -116,6 +140,8 @@ function cerrarPanelAjustes(header) {
   capa?.classList.remove('navbar-informacion__ajustes-capa--abierta');
   capa?.setAttribute('aria-hidden', 'true');
   botonAjustes?.setAttribute('aria-expanded', 'false');
+  botonAjustes?.setAttribute('aria-label', 'Abrir menú');
+  botonAjustes?.setAttribute('title', 'Abrir menú');
   controlNavbar?.setAttribute('aria-expanded', 'true');
   controlNavbar?.setAttribute('aria-label', 'Ocultar navegación');
   controlNavbar?.replaceChildren('↑');
@@ -172,11 +198,15 @@ function mostrarPagina(idPagina) {
       ? cargarFragmentoRaiz('Footer.html')
       : cargarFragmento(pagina.carpeta, pagina.footer);
   const claseHeader = pagina.usaComponentesCompartidos ? ' class="header-informacion"' : '';
-  const modificadorContenido = idPagina === 'informacion'
-    ? ' page-content--quienes'
-    : idPagina === 'pagina3'
-      ? ' page-content--programas'
-      : '';
+  const modificadorContenido = pagina.esLegal
+    ? ' page-content--legal'
+    : idPagina === 'informacion'
+      ? ' page-content--quienes'
+      : idPagina === 'pagina3'
+        ? ' page-content--programas'
+        : idPagina === 'pagina2'
+          ? ' page-content--leyes'
+        : '';
   const claseContenido = pagina.esPortada
     ? 'page-content page-content--portada'
     : pagina.usaComponentesCompartidos
@@ -210,6 +240,8 @@ function actualizarContenidoCompartido(idPagina) {
     'page-content--navbar-informacion',
     'page-content--quienes',
     'page-content--programas',
+    'page-content--leyes',
+    'page-content--legal',
   );
   contenido.classList.add(
     pagina.esPortada ? 'page-content--portada' : 'page-content--navbar-informacion',
@@ -218,6 +250,10 @@ function actualizarContenidoCompartido(idPagina) {
     contenido.classList.add('page-content--quienes');
   } else if (idPagina === 'pagina3') {
     contenido.classList.add('page-content--programas');
+  } else if (idPagina === 'pagina2') {
+    contenido.classList.add('page-content--leyes');
+  } else if (pagina.esLegal) {
+    contenido.classList.add('page-content--legal');
   }
   app.querySelectorAll('[data-page][aria-current="page"]').forEach((boton) => {
     boton.removeAttribute('aria-current');
@@ -302,6 +338,11 @@ async function irAlManifiesto() {
 
 function cerrarDialogoPrograma(dialogo) {
   if (!dialogo.open || dialogo.classList.contains('programas__modal--cerrando')) {
+    return;
+  }
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    dialogo.close();
     return;
   }
 
@@ -420,7 +461,7 @@ app.addEventListener('click', (evento) => {
   const cabeceraInformacion = evento.target.closest('.header-informacion');
   const capaIdioma = evento.target.closest('.navbar-informacion__idioma-capa');
   const capaAjustes = evento.target.closest('.navbar-informacion__ajustes-capa');
-  const botonAjustes = evento.target.closest('.navbar-informacion__ajustes');
+  const botonAjustes = evento.target.closest('.navbar-informacion__menu');
   const botonCerrarAjustes = evento.target.closest('.navbar-informacion__ajustes-cerrar');
   const botonPaginaPanel = evento.target.closest(
     '.navbar-informacion__ajustes-panel [data-page]',
@@ -499,6 +540,8 @@ app.addEventListener('click', (evento) => {
     capa?.classList.toggle('navbar-informacion__ajustes-capa--abierta', !abiertos);
     capa?.setAttribute('aria-hidden', String(abiertos));
     botonAjustes.setAttribute('aria-expanded', String(!abiertos));
+    botonAjustes.setAttribute('aria-label', abiertos ? 'Abrir menú' : 'Cerrar menú');
+    botonAjustes.setAttribute('title', abiertos ? 'Abrir menú' : 'Cerrar menú');
     controlNavbar?.setAttribute('aria-expanded', String(abiertos));
     controlNavbar?.setAttribute('aria-label', abiertos ? 'Ocultar navegación' : 'Mostrar navegación');
     controlNavbar?.replaceChildren(abiertos ? '↑' : '↓');

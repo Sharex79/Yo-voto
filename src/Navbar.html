@@ -2,16 +2,6 @@
 <nav id="navegacion-informacion" class="navbar navbar-informacion" aria-label="Navegación principal">
   <div class="navbar-informacion__marca">
     <button
-      class="navbar-informacion__icono navbar-informacion__ajustes"
-      type="button"
-      aria-label="Ajustes"
-      title="Ajustes"
-      aria-controls="panel-ajustes"
-      aria-expanded="false"
-    >
-      <img src="/ajustes.png" alt="" />
-    </button>
-    <button
       class="navbar-informacion__logo-boton"
       type="button"
       aria-label="Volver al inicio de la página"
@@ -20,13 +10,18 @@
       <img class="navbar-informacion__logo" src="/Logo.png" alt="" />
     </button>
     <button
-      class="navbar-informacion__icono"
+      class="navbar-informacion__icono navbar-informacion__menu"
       type="button"
-      data-page="dinamica"
-      aria-label="Ir a Dinámica"
-      title="Dinámica"
+      aria-label="Abrir menú"
+      title="Abrir menú"
+      aria-controls="panel-ajustes"
+      aria-expanded="false"
     >
-      <img src="/pensamiento.png" alt="" />
+      <span class="navbar-informacion__menu-icono" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
     </button>
   </div>
   <div class="navbar-informacion__links">
