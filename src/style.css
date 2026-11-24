@@ -51,6 +51,10 @@ body::before {
   overflow-anchor: none;
 }
 
+.dinamica__mapa {
+  display: none;
+}
+
 @media (min-width: 1000px) {
   #app.app--dinamica {
     width: 50vw;
@@ -58,15 +62,91 @@ body::before {
     box-shadow: none;
   }
 
-  #app.app--dinamica::after {
+  .dinamica__mapa {
     position: fixed;
+    z-index: 0;
     top: 0;
     right: 0;
+    display: block;
     width: 50vw;
     height: 100vh;
-    content: '';
+    height: 100dvh;
+    overflow: hidden;
+    isolation: isolate;
+    background: #101114;
+  }
+
+  .dinamica__mapa::before {
+    position: absolute;
+    z-index: 0;
+    inset: -40px;
     background: url('/fondo_esquema.jpg') center / cover no-repeat;
+    content: '';
+    filter: blur(40px);
+    transform: scale(1.05);
     pointer-events: none;
+  }
+
+  .dinamica__conexiones,
+  .dinamica__nodos {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .dinamica__conexiones {
+    z-index: 1;
+  }
+
+  .dinamica__nodos {
+    z-index: 2;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .dinamica__nodo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    gap: 7px;
+    width: clamp(160px, 16vw, 220px);
+    padding: 14px 16px;
+    box-sizing: border-box;
+    border: 1px solid rgb(255 255 255 / 62%);
+    border-radius: 12px;
+    color: #fff;
+    background: rgb(32 36 49 / 88%);
+    box-shadow: 0 8px 26px rgb(0 0 0 / 28%);
+    backdrop-filter: blur(6px);
+    cursor: grab;
+    opacity: 0;
+    pointer-events: auto;
+    touch-action: none;
+    transition: opacity 0.24s ease;
+    will-change: transform, opacity;
+  }
+
+  .dinamica__nodo--visible {
+    opacity: 1;
+  }
+
+  .dinamica__nodo--saliendo {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .dinamica__nodo--arrastrando {
+    z-index: 2;
+    cursor: grabbing;
+  }
+
+  .dinamica__nodo-texto {
+    color: rgb(255 255 255 / 84%);
+    font-size: 12px;
+    line-height: 1.45;
   }
 }
 
@@ -95,6 +175,7 @@ body::before {
 .page-content--programas,
 .page-content--leyes,
 .page-content--dinamica,
+.page-content--dinamica-resultado,
 .page-content--legal {
   flex: 0 0 auto;
   min-height: 0;
@@ -556,6 +637,38 @@ body::before {
 .dinamica__finalizar:focus-visible {
   outline: 3px solid #252525;
   outline-offset: 3px;
+}
+
+.dinamica-resultado__introduccion {
+  padding-top: 6px;
+}
+
+.dinamica-resultado__programa {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.page-content .dinamica-resultado__relleno {
+  margin-top: 20px;
+}
+
+.dinamica-resultado__programa .programas__tarjeta {
+  width: min(100%, 600px);
+}
+
+.dinamica-resultado__programa .programas__tarjeta-titulo {
+  margin-bottom: 20px;
+  font-size: clamp(48px, 8vw, 60px);
+  line-height: 1;
+}
+
+.dinamica-resultado__cierre {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e5e5;
 }
 
 .legalidad__contenido {

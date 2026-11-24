@@ -1,8 +1,14 @@
 import './style.css';
 import './navbar.css';
 import './responsive.css';
+import {
+  actualizarCubitoDinamica,
+  conectarInteraccionMapa,
+  iniciarAnimacionCubos,
+  panelDinamicaHTML,
+} from './A1 Dinamica_Preguntas-Respuestas/dinamica.js';
 
-// 1. Configuración: cada botón apunta a una carpeta y a sus fragmentos HTML.
+// Configuración: cada clave identifica una página y sus fragmentos HTML.
 const paginas = {
   inicio: {
     carpeta: 'Página_Inicio',
@@ -67,6 +73,11 @@ const paginas = {
     usaComponentesCompartidos: true,
     mostrarFooter: false,
   },
+  resultadoDinamica: {
+    carpeta: 'A1 Dinamica_Preguntas-Respuestas',
+    secciones: ['Resultado.html'],
+    usaComponentesCompartidos: true,
+  },
   comparacion: {
     carpeta: 'A2 Respuesta Final+Comparación',
     navbar: 'Navbar.html',
@@ -75,7 +86,33 @@ const paginas = {
   },
 };
 
-// Vite prepara los HTML como texto para poder insertarlos en la página.
+const modificadoresContenido = {
+  informacion: 'page-content--quienes',
+  pagina2: 'page-content--leyes',
+  pagina3: 'page-content--programas',
+  dinamica: 'page-content--dinamica',
+  resultadoDinamica: 'page-content--dinamica-resultado',
+};
+
+function obtenerClasesContenido(idPagina, pagina) {
+  const clases = ['page-content'];
+
+  if (pagina.esPortada) {
+    clases.push('page-content--portada');
+  } else if (pagina.usaComponentesCompartidos) {
+    clases.push('page-content--navbar-informacion');
+  }
+
+  if (pagina.esLegal) {
+    clases.push('page-content--legal');
+  } else if (modificadoresContenido[idPagina]) {
+    clases.push(modificadoresContenido[idPagina]);
+  }
+
+  return clases.join(' ');
+}
+
+// Vite importa cada fragmento HTML como texto para insertarlo al navegar.
 const fragmentosHtml = import.meta.glob('./**/*.html', {
   eager: true,
   query: '?raw',
@@ -96,6 +133,7 @@ let paginaActual = null;
 let transicionPaginaEnCurso = false;
 const navbarMovilMedia = window.matchMedia('(max-width: 700px)');
 
+// Conserva la posición de página mientras un diálogo o panel bloquea el scroll.
 function bloquearScrollFondo() {
   if (posicionAntesPanelAjustes !== null) {
     return;
@@ -132,6 +170,8 @@ function cerrarPanelAjustes(header) {
   const capa = header.querySelector('.navbar-informacion__ajustes-capa');
   const botonAjustes = header.querySelector('.navbar-informacion__menu');
   const controlNavbar = header.querySelector('.navbar-informacion__toggle');
+  const estabaAlFinal = header.dataset.scrollAlFinal === 'true';
+  delete header.dataset.scrollAlFinal;
 
   header.classList.remove(
     'header-informacion--oculta',
@@ -147,6 +187,7 @@ function cerrarPanelAjustes(header) {
   controlNavbar?.setAttribute('aria-label', 'Ocultar navegación');
   controlNavbar?.replaceChildren('↑');
   desbloquearScrollFondo();
+  ajustarScrollTrasCambioNavbar(estabaAlFinal);
 }
 
 function cerrarSelectorIdioma(header) {
@@ -155,7 +196,7 @@ function cerrarSelectorIdioma(header) {
   capaIdioma?.setAttribute('aria-hidden', 'true');
 }
 
-// 2. Funciones comunes: normalmente no hace falta cambiarlas al añadir contenido.
+// Resuelve fragmentos locales o compartidos y notifica explícitamente si faltan.
 function cargarFragmento(carpeta, archivo) {
   const ruta = `./${carpeta}/${archivo}`;
   const html = fragmentosHtml[ruta];
@@ -185,11 +226,9 @@ function mostrarPagina(idPagina) {
     throw new Error(`No existe la página "${idPagina}".`);
   }
 
-  const navbar = pagina.mostrarNavbar === false
-    ? ''
-    : pagina.usaComponentesCompartidos
-      ? cargarFragmentoRaiz('Navbar.html')
-      : cargarFragmento(pagina.carpeta, pagina.navbar);
+  const navbar = pagina.usaComponentesCompartidos
+    ? cargarFragmentoRaiz('Navbar.html')
+    : cargarFragmento(pagina.carpeta, pagina.navbar);
   const secciones = pagina.secciones
     .map((archivo) => cargarFragmento(pagina.carpeta, archivo))
     .join('\n');
@@ -198,32 +237,22 @@ function mostrarPagina(idPagina) {
     : pagina.usaComponentesCompartidos
       ? cargarFragmentoRaiz('Footer.html')
       : cargarFragmento(pagina.carpeta, pagina.footer);
-  const claseHeader = pagina.usaComponentesCompartidos ? ' class="header-informacion"' : '';
-  const modificadorContenido = pagina.esLegal
-    ? ' page-content--legal'
-    : idPagina === 'informacion'
-      ? ' page-content--quienes'
-      : idPagina === 'pagina3'
-        ? ' page-content--programas'
-        : idPagina === 'pagina2'
-          ? ' page-content--leyes'
-          : idPagina === 'dinamica'
-            ? ' page-content--dinamica'
-        : '';
-  const claseContenido = pagina.esPortada
-    ? 'page-content page-content--portada'
-    : pagina.usaComponentesCompartidos
-      ? `page-content page-content--navbar-informacion${modificadorContenido}`
-      : 'page-content';
-
   desbloquearScrollFondo();
   app.classList.toggle('app--dinamica', idPagina === 'dinamica');
   app.innerHTML = `
-    ${navbar ? `<header${claseHeader}>${navbar}</header>` : ''}
-    <main class="${claseContenido}">${secciones}</main>
+    ${navbar ? `<header${pagina.usaComponentesCompartidos ? ' class="header-informacion"' : ''}>${navbar}</header>` : ''}
+    <main class="${obtenerClasesContenido(idPagina, pagina)}">${secciones}</main>
+    ${idPagina === 'dinamica' ? panelDinamicaHTML : ''}
     ${footer ? `<footer>${footer}</footer>` : ''}
   `;
 
+  if (idPagina === 'resultadoDinamica') {
+    insertarProgramaAleatorio();
+  }
+  const panelDinamica = app.querySelector('.dinamica__mapa');
+  if (panelDinamica instanceof HTMLElement) {
+    conectarInteraccionMapa(panelDinamica);
+  }
   app.querySelector(`[data-page="${idPagina}"]`)?.setAttribute('aria-current', 'page');
 }
 
@@ -239,6 +268,19 @@ function actualizarContenidoCompartido(idPagina) {
   contenido.innerHTML = pagina.secciones
     .map((archivo) => cargarFragmento(pagina.carpeta, archivo))
     .join('\n');
+  if (idPagina === 'resultadoDinamica') {
+    insertarProgramaAleatorio();
+  }
+  const panelDinamica = app.querySelector('.dinamica__mapa');
+  if (idPagina === 'dinamica' && !panelDinamica) {
+    contenido.insertAdjacentHTML('afterend', panelDinamicaHTML);
+  } else if (idPagina !== 'dinamica') {
+    panelDinamica?.remove();
+  }
+  const panelActual = app.querySelector('.dinamica__mapa');
+  if (panelActual instanceof HTMLElement) {
+    conectarInteraccionMapa(panelActual);
+  }
   const footerActual = app.querySelector('footer');
   if (pagina.mostrarFooter === false) {
     footerActual?.remove();
@@ -247,30 +289,7 @@ function actualizarContenidoCompartido(idPagina) {
     footer.innerHTML = cargarFragmentoRaiz('Footer.html');
     contenido.after(footer);
   }
-  contenido.classList.remove('page-content--salida', 'page-content--entrada');
-  contenido.classList.remove(
-    'page-content--portada',
-    'page-content--navbar-informacion',
-    'page-content--quienes',
-    'page-content--programas',
-    'page-content--leyes',
-    'page-content--dinamica',
-    'page-content--legal',
-  );
-  contenido.classList.add(
-    pagina.esPortada ? 'page-content--portada' : 'page-content--navbar-informacion',
-  );
-  if (idPagina === 'informacion') {
-    contenido.classList.add('page-content--quienes');
-  } else if (idPagina === 'pagina3') {
-    contenido.classList.add('page-content--programas');
-  } else if (idPagina === 'pagina2') {
-    contenido.classList.add('page-content--leyes');
-  } else if (idPagina === 'dinamica') {
-    contenido.classList.add('page-content--dinamica');
-  } else if (pagina.esLegal) {
-    contenido.classList.add('page-content--legal');
-  }
+  contenido.className = obtenerClasesContenido(idPagina, pagina);
   app.querySelectorAll('[data-page][aria-current="page"]').forEach((boton) => {
     boton.removeAttribute('aria-current');
   });
@@ -334,6 +353,7 @@ async function cambiarPagina(idPagina, { desplazarAlInicio = true } = {}) {
   }
 }
 
+// Vuelve al inicio y desplaza la vista hasta la sección del manifiesto.
 async function irAlManifiesto() {
   if (paginaActual !== 'inicio') {
     await cambiarPagina('inicio', { desplazarAlInicio: false });
@@ -352,6 +372,7 @@ async function irAlManifiesto() {
   });
 }
 
+// Controla el diálogo de programas y restaura el scroll al cerrarlo.
 function cerrarDialogoPrograma(dialogo) {
   if (!dialogo.open || dialogo.classList.contains('programas__modal--cerrando')) {
     return;
@@ -371,9 +392,48 @@ function cerrarDialogoPrograma(dialogo) {
   }, 220);
 }
 
-// Un solo listener sirve para los botones aunque se vuelva a crear la navbar.
+function insertarProgramaAleatorio() {
+  const tarjetasDocumento = new DOMParser().parseFromString(
+    cargarFragmento('Página_Programas', 'Section.html'),
+    'text/html',
+  );
+  const tarjetas = [...tarjetasDocumento.querySelectorAll('.programas__tarjeta')];
+  const modal = tarjetasDocumento.querySelector('.programas__modal');
+  const contenedor = app.querySelector('.dinamica-resultado__programa');
+  const indiceAleatorio = Math.floor(Math.random() * tarjetas.length);
+  const tarjeta = tarjetas[indiceAleatorio];
+  const boton = tarjeta?.querySelector('.programas__slot');
+
+  if (
+    !tarjeta ||
+    !modal ||
+    !contenedor ||
+    !(boton instanceof HTMLButtonElement)
+  ) {
+    throw new Error('No se pudo cargar un partido de Programas para el resultado.');
+  }
+
+  const clasesColor = [...boton.classList].filter((clase) =>
+    clase.startsWith('programas__slot--'),
+  );
+  boton.classList.remove(...clasesColor);
+  boton.classList.add('programas__slot--gris');
+
+  const componentePrograma = document.createElement('section');
+  componentePrograma.className = 'programas dinamica-resultado__componente';
+  componentePrograma.append(tarjeta, modal.cloneNode(true));
+  contenedor.append(componentePrograma);
+}
+
+// Delegated clicks keep working when page fragments replace the current DOM.
 app.addEventListener('click', (evento) => {
   if (!(evento.target instanceof Element)) {
+    return;
+  }
+
+  const botonFinalizar = evento.target.closest('.dinamica__finalizar');
+  if (botonFinalizar) {
+    void cambiarPagina('resultadoDinamica');
     return;
   }
 
@@ -382,6 +442,7 @@ app.addEventListener('click', (evento) => {
   if (botonPregunta) {
     const seleccionado = botonPregunta.getAttribute('aria-pressed') === 'true';
     botonPregunta.setAttribute('aria-pressed', String(!seleccionado));
+    actualizarCubitoDinamica(app, botonPregunta, !seleccionado);
     return;
   }
 
@@ -555,25 +616,27 @@ app.addEventListener('click', (evento) => {
     const controlNavbar = cabeceraInformacion.querySelector('.navbar-informacion__toggle');
     const abiertos = cabeceraInformacion.classList.contains('header-informacion--ajustes-abiertos');
 
+    if (abiertos) {
+      cerrarPanelAjustes(cabeceraInformacion);
+      return;
+    }
+
+    cabeceraInformacion.dataset.scrollAlFinal = String(estaAlFinalDelDocumento());
     if (navbarMovilMedia.matches) {
       cabeceraInformacion.classList.remove('header-informacion--scroll-oculto');
     } else {
-      cabeceraInformacion.classList.toggle('header-informacion--oculta', !abiertos);
+      cabeceraInformacion.classList.add('header-informacion--oculta');
     }
-    cabeceraInformacion.classList.toggle('header-informacion--ajustes-abiertos', !abiertos);
-    capa?.classList.toggle('navbar-informacion__ajustes-capa--abierta', !abiertos);
-    capa?.setAttribute('aria-hidden', String(abiertos));
-    botonAjustes.setAttribute('aria-expanded', String(!abiertos));
-    botonAjustes.setAttribute('aria-label', abiertos ? 'Abrir menú' : 'Cerrar menú');
-    botonAjustes.setAttribute('title', abiertos ? 'Abrir menú' : 'Cerrar menú');
-    controlNavbar?.setAttribute('aria-expanded', String(abiertos));
-    controlNavbar?.setAttribute('aria-label', abiertos ? 'Ocultar navegación' : 'Mostrar navegación');
-    controlNavbar?.replaceChildren(abiertos ? '↑' : '↓');
-    if (abiertos) {
-      desbloquearScrollFondo();
-    } else {
-      bloquearScrollFondo();
-    }
+    cabeceraInformacion.classList.add('header-informacion--ajustes-abiertos');
+    capa?.classList.add('navbar-informacion__ajustes-capa--abierta');
+    capa?.setAttribute('aria-hidden', 'false');
+    botonAjustes.setAttribute('aria-expanded', 'true');
+    botonAjustes.setAttribute('aria-label', 'Cerrar menú');
+    botonAjustes.setAttribute('title', 'Cerrar menú');
+    controlNavbar?.setAttribute('aria-expanded', 'false');
+    controlNavbar?.setAttribute('aria-label', 'Mostrar navegación');
+    controlNavbar?.replaceChildren('↓');
+    bloquearScrollFondo();
     return;
   }
 
@@ -591,10 +654,12 @@ app.addEventListener('click', (evento) => {
       return;
     }
 
+    const estabaAlFinal = estaAlFinalDelDocumento();
     const oculta = header.classList.toggle('header-informacion--oculta');
     controlNavbar.setAttribute('aria-expanded', String(!oculta));
     controlNavbar.setAttribute('aria-label', oculta ? 'Mostrar navegación' : 'Ocultar navegación');
     controlNavbar.textContent = oculta ? '↓' : '↑';
+    ajustarScrollTrasCambioNavbar(estabaAlFinal);
     return;
   }
 
@@ -606,6 +671,7 @@ app.addEventListener('click', (evento) => {
   }
 });
 
+// Escape closes the active menu or language picker.
 window.addEventListener('keydown', (evento) => {
   if (evento.key !== 'Escape') {
     return;
@@ -622,6 +688,55 @@ window.addEventListener('keydown', (evento) => {
 let ultimaPosicionScroll = window.scrollY;
 let direccionScroll = 0;
 let recorridoScroll = 0;
+
+// Detects the bottom edge so navbar changes do not leave the footer out of view.
+function estaAlFinalDelDocumento() {
+  const limiteInferior = Math.max(
+    0,
+    document.documentElement.scrollHeight - window.innerHeight,
+  );
+  return limiteInferior - window.scrollY <= 4;
+}
+
+function ajustarScrollTrasCambioNavbar(estabaAlFinal) {
+  const contenido = app.querySelector('.page-content');
+
+  if (!(contenido instanceof HTMLElement)) {
+    return;
+  }
+
+  let timeoutId = 0;
+  const finalizar = () => {
+    window.clearTimeout(timeoutId);
+    contenido.removeEventListener('transitionend', alFinalizarTransicion);
+    window.requestAnimationFrame(() => {
+      const limiteInferior = Math.max(
+        0,
+        document.documentElement.scrollHeight - window.innerHeight,
+      );
+      const posicionObjetivo = estabaAlFinal
+        ? limiteInferior
+        : Math.min(window.scrollY, limiteInferior);
+
+      if (Math.abs(window.scrollY - posicionObjetivo) <= 1) {
+        return;
+      }
+
+      ignorarDireccionScrollHasta = performance.now() + 450;
+      direccionScroll = 0;
+      recorridoScroll = 0;
+      window.scrollTo({ top: posicionObjetivo, behavior: 'instant' });
+    });
+  };
+  const alFinalizarTransicion = (evento) => {
+    if (evento.target === contenido && evento.propertyName === 'padding-top') {
+      finalizar();
+    }
+  };
+
+  contenido.addEventListener('transitionend', alFinalizarTransicion);
+  timeoutId = window.setTimeout(finalizar, 350);
+}
 
 function actualizarProgresoScroll() {
   const raiz = document.documentElement;
@@ -645,6 +760,7 @@ function actualizarProgresoScroll() {
   marca.style.setProperty('--progreso-scroll', String(progreso));
 }
 
+// Hides navigation on scroll down and restores it when returning toward the top.
 window.addEventListener(
   'scroll',
   () => {
@@ -723,6 +839,7 @@ window.addEventListener(
   { passive: true },
 );
 
+// Resets compact navigation styles when switching between mobile and desktop widths.
 window.addEventListener('resize', () => {
   actualizarProgresoScroll();
   const header = app.querySelector('.header-informacion');
@@ -736,6 +853,7 @@ window.addEventListener('resize', () => {
   } else {
     header?.classList.remove('header-informacion--scroll-oculto');
   }
+  iniciarAnimacionCubos(app);
 });
 
 mostrarPagina('inicio');
