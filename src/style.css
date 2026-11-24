@@ -51,6 +51,25 @@ body::before {
   overflow-anchor: none;
 }
 
+@media (min-width: 1000px) {
+  #app.app--dinamica {
+    width: 50vw;
+    margin: 0;
+    box-shadow: none;
+  }
+
+  #app.app--dinamica::after {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 50vw;
+    height: 100vh;
+    content: '';
+    background: url('/fondo_esquema.jpg') center / cover no-repeat;
+    pointer-events: none;
+  }
+}
+
 .page-content {
   flex: 1;
   min-height: 200vh;

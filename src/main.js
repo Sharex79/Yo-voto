@@ -65,6 +65,7 @@ const paginas = {
     carpeta: 'A1 Dinamica_Preguntas-Respuestas',
     secciones: ['Section.html'],
     usaComponentesCompartidos: true,
+    mostrarFooter: false,
   },
   comparacion: {
     carpeta: 'A2 Respuesta Final+Comparación',
@@ -216,6 +217,7 @@ function mostrarPagina(idPagina) {
       : 'page-content';
 
   desbloquearScrollFondo();
+  app.classList.toggle('app--dinamica', idPagina === 'dinamica');
   app.innerHTML = `
     ${navbar ? `<header${claseHeader}>${navbar}</header>` : ''}
     <main class="${claseContenido}">${secciones}</main>
@@ -233,9 +235,18 @@ function actualizarContenidoCompartido(idPagina) {
     throw new Error(`No se pudo actualizar el contenido compartido de "${idPagina}".`);
   }
 
+  app.classList.toggle('app--dinamica', idPagina === 'dinamica');
   contenido.innerHTML = pagina.secciones
     .map((archivo) => cargarFragmento(pagina.carpeta, archivo))
     .join('\n');
+  const footerActual = app.querySelector('footer');
+  if (pagina.mostrarFooter === false) {
+    footerActual?.remove();
+  } else if (!footerActual) {
+    const footer = document.createElement('footer');
+    footer.innerHTML = cargarFragmentoRaiz('Footer.html');
+    contenido.after(footer);
+  }
   contenido.classList.remove('page-content--salida', 'page-content--entrada');
   contenido.classList.remove(
     'page-content--portada',
