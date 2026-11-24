@@ -75,6 +75,7 @@ body::before {
 .page-content--quienes,
 .page-content--programas,
 .page-content--leyes,
+.page-content--dinamica,
 .page-content--legal {
   flex: 0 0 auto;
   min-height: 0;
@@ -444,6 +445,98 @@ body::before {
   color: #777;
   font-size: 14px;
   line-height: 1.65;
+}
+
+.dinamica__introduccion {
+  padding-top: 6px;
+}
+
+.dinamica__rejilla {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(10px, 2.5vw, 18px);
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.dinamica__cubo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: clamp(8px, 2vw, 16px);
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  background: #858585;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.dinamica__cubo:hover,
+.dinamica__cubo:focus-visible {
+  z-index: 1;
+  background: #a84d49;
+  transform: scale(1.05);
+}
+
+.dinamica__cubo[aria-pressed='true'],
+.dinamica__cubo[aria-pressed='true']:hover {
+  background: #e34b43;
+}
+
+.dinamica__cubo:focus-visible {
+  outline: 3px solid #252525;
+  outline-offset: 3px;
+}
+
+.dinamica__cubo-titulo {
+  display: block;
+  margin: 0 0 8px;
+  font-size: clamp(12px, 2vw, 16px);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.dinamica__cubo-texto {
+  display: block;
+  color: rgb(255 255 255 / 84%);
+  font-size: clamp(10px, 1.5vw, 13px);
+  line-height: 1.4;
+}
+
+.dinamica__finalizar-contenedor {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.dinamica__finalizar {
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 6px;
+  color: #fff;
+  background: #e34b43;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.dinamica__finalizar:hover {
+  background: #c83d36;
+  transform: translateY(-2px);
+}
+
+.dinamica__finalizar:focus-visible {
+  outline: 3px solid #252525;
+  outline-offset: 3px;
 }
 
 .legalidad__contenido {

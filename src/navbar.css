@@ -469,9 +469,4 @@
   transition: padding-top 0.3s ease;
 }
 
-.header-informacion--oculta + .page-content--navbar-informacion,
-.header-informacion--oculta + .page-content--portada {
-  padding-top: 56px;
-}
-
 /* FIN: estilos de las navbars y sus paneles */

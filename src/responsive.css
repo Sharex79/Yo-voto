@@ -18,6 +18,12 @@
   }
 }
 
+@media (max-width: 600px) {
+  .dinamica__rejilla {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 359px) {
   .programas__rejilla {
     grid-template-columns: minmax(0, 1fr);
@@ -212,10 +218,6 @@
     padding-top: 112px;
   }
 
-  .header-informacion--scroll-oculto + .page-content--navbar-informacion,
-  .header-informacion--scroll-oculto + .page-content--portada {
-    padding-top: 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -226,6 +228,8 @@
   .footer-informacion__legales-lista,
   .programas__tarjeta,
   .programas__slot,
+  .dinamica__cubo,
+  .dinamica__finalizar,
   .programas__modal,
   .programas__partido,
   .page-content,

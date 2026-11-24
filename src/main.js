@@ -63,9 +63,8 @@ const paginas = {
   },
   dinamica: {
     carpeta: 'A1 Dinamica_Preguntas-Respuestas',
-    navbar: 'Navbar.html',
     secciones: ['Section.html'],
-    footer: 'Footer.html',
+    usaComponentesCompartidos: true,
   },
   comparacion: {
     carpeta: 'A2 Respuesta Final+Comparación',
@@ -207,6 +206,8 @@ function mostrarPagina(idPagina) {
         ? ' page-content--programas'
         : idPagina === 'pagina2'
           ? ' page-content--leyes'
+          : idPagina === 'dinamica'
+            ? ' page-content--dinamica'
         : '';
   const claseContenido = pagina.esPortada
     ? 'page-content page-content--portada'
@@ -242,6 +243,7 @@ function actualizarContenidoCompartido(idPagina) {
     'page-content--quienes',
     'page-content--programas',
     'page-content--leyes',
+    'page-content--dinamica',
     'page-content--legal',
   );
   contenido.classList.add(
@@ -253,6 +255,8 @@ function actualizarContenidoCompartido(idPagina) {
     contenido.classList.add('page-content--programas');
   } else if (idPagina === 'pagina2') {
     contenido.classList.add('page-content--leyes');
+  } else if (idPagina === 'dinamica') {
+    contenido.classList.add('page-content--dinamica');
   } else if (pagina.esLegal) {
     contenido.classList.add('page-content--legal');
   }
@@ -359,6 +363,14 @@ function cerrarDialogoPrograma(dialogo) {
 // Un solo listener sirve para los botones aunque se vuelva a crear la navbar.
 app.addEventListener('click', (evento) => {
   if (!(evento.target instanceof Element)) {
+    return;
+  }
+
+  const botonPregunta = evento.target.closest('.dinamica__cubo');
+
+  if (botonPregunta) {
+    const seleccionado = botonPregunta.getAttribute('aria-pressed') === 'true';
+    botonPregunta.setAttribute('aria-pressed', String(!seleccionado));
     return;
   }
 
